@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VenzRyk 4 — AI Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0d10; --s1:#111418; --s2:#171b22; --s3:#1e232c;
+  --b1:#252b36; --b2:#303744;
+  --t1:#e6e9f0; --t2:#8a93a8; --t3:#4e5668;
+  --ac:#4d8fd6; --ac2:#2a5f9e; --acfx:rgba(77,143,214,0.12);
+  --grn:#52b06a; --gld:#b8962e; --red:#c45050; --org:#d4843a;
+  --mono:'JetBrains Mono',monospace; --sans:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--t1)}
+
+/* ── LOGIN MODAL ── */
+.login-modal { max-width:360px; }
+.login-logo {
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+.login-v {
+  width:34px;height:34px;background:var(--ac);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#fff;
+}
+.login-title {font-size:17px;font-weight:800;letter-spacing:-0.4px}
+.login-sub {font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.5}
+.login-field {margin-bottom:12px}
+.login-label {font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:5px;display:block}
+.login-input {
+  width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:8px;
+  color:var(--t1);font-family:var(--sans);font-size:13.5px;
+  padding:10px 12px;outline:none;transition:border-color 0.2s;
+}
+.login-input:focus{border-color:var(--ac)}
+.login-btn {
+  width:100%;padding:11px;background:var(--ac);border:none;border-radius:8px;
+  color:#fff;font-size:13.5px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:background 0.15s;margin-top:4px;
+}
+.login-btn:hover{background:#3a7dc0}
+.login-err {font-size:11.5px;color:var(--red);margin-top:8px;min-height:16px;text-align:center}
+.login-reg {
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--b1);
+  text-align:center;font-size:12px;color:var(--t3);
+}
+.login-reg a {color:var(--ac);cursor:pointer;text-decoration:none;font-weight:700}
+.login-reg a:hover{text-decoration:underline}
+
+/* ── REGISTER VIEW ── */
+.reg-back {
+  display:inline-flex;align-items:center;gap:5px;
+  color:var(--t3);font-size:11.5px;cursor:pointer;margin-bottom:16px;
+  background:none;border:none;font-family:var(--sans);
+}
+.reg-back:hover{color:var(--t2)}
+
+/* input area lock hint */
+.input-lock {
+  display:flex;align-items:center;gap:8px;padding:11px 14px;
+  background:var(--s2);border:1px solid var(--b2);border-radius:10px;
+  cursor:pointer;transition:border-color 0.2s;user-select:none;
+}
+.input-lock:hover{border-color:var(--ac)}
+.lock-ico{color:var(--t3);flex-shrink:0}
+.lock-txt{font-size:13px;color:var(--t3);flex:1}
+.lock-btn{
+  padding:5px 14px;background:var(--ac);border:none;border-radius:6px;
+  color:#fff;font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--sans);
+  white-space:nowrap;
+}
+.lock-btn:hover{background:#3a7dc0}
+
+/* ── TOPBAR ── */
+.topbar {
+  height:48px;background:var(--s1);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;
+}
+.logo{font-weight:800;font-size:15px;letter-spacing:-0.5px;display:flex;align-items:center;gap:7px;margin-right:4px}
+.logo-v{width:26px;height:26px;background:var(--ac);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{
+  padding:5px 13px;border-radius:6px;border:1px solid transparent;background:transparent;
+  color:var(--t3);font-family:var(--sans);font-size:11.5px;font-weight:600;
+  cursor:pointer;white-space:nowrap;transition:all 0.15s;
+}
+.nav-btn:hover{color:var(--t2);background:var(--s2)}
+.nav-btn.active{color:var(--t1);background:var(--s3);border-color:var(--b2)}
+.topright{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.model-pill{
+  display:flex;align-items:center;gap:6px;padding:4px 10px;
+  background:var(--s2);border:1px solid var(--b2);border-radius:20px;
+  font-size:11px;color:var(--t2);font-family:var(--mono);cursor:pointer;transition:all 0.15s;
+}
+.model-pill:hover{border-color:var(--ac);color:var(--ac)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* user badge in topbar */
+.user-badge {
+  display:flex;align-items:center;gap:6px;padding:3px 8px 3px 4px;
+  background:var(--s2);border:1px solid var(--b2);border-radius:20px;cursor:pointer;transition:all 0.15s;
+}
+.user-badge:hover{border-color:var(--b2);background:var(--s3)}
+.user-av {
+  width:22px;height:22px;border-radius:50%;background:var(--ac2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.user-av.pro{background:var(--org)}
+.user-name{font-size:10px;font-weight:700;color:var(--t2);font-family:var(--mono)}
+.pro-tag{font-size:9px;font-weight:700;color:var(--org);background:rgba(212,132,58,0.15);border-radius:4px;padding:1px 5px;margin-left:2px}
+
+/* rate limit bar */
+.rate-bar {
+  display:flex;align-items:center;gap:8px;padding:6px 14px;
+  background:var(--bg);border-bottom:1px solid var(--b1);flex-shrink:0;
+}
+.rate-label{font-size:10px;color:var(--t3);font-family:var(--mono);flex-shrink:0}
+.rate-track{flex:1;height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
+.rate-fill{height:100%;background:var(--grn);border-radius:2px;transition:width 0.3s,background 0.3s}
+.rate-fill.warn{background:var(--org)}
+.rate-fill.full{background:var(--red)}
+.rate-count{font-size:10px;color:var(--t3);font-family:var(--mono);flex-shrink:0}
+
+/* ── BODY LAYOUT ── */
+.body{display:flex;flex-direction:column;height:calc(100vh - 48px)}
+.workspace{display:flex;flex:1;overflow:hidden}
+.panel{display:none;flex:1;overflow:hidden}
+.panel.active{display:flex}
+
+/* ── CHAT ── */
+#p-chat{flex-direction:column}
+.messages{
+  flex:1;overflow-y:auto;padding:18px 16px;
+  display:flex;flex-direction:column;gap:14px;
+  scrollbar-width:thin;scrollbar-color:var(--b2) transparent;
+}
+.messages::-webkit-scrollbar{width:4px}
+.messages::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.msg{display:flex;gap:10px;max-width:860px;animation:up 0.2s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.av{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.msg.ai .av{background:linear-gradient(135deg,var(--ac2),var(--ac));color:#fff}
+.msg.user .av{background:var(--s3);color:var(--t2);border:1px solid var(--b2)}
+.mbody{max-width:calc(100% - 44px)}
+.mname{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;margin-bottom:4px;color:var(--t3)}
+.msg.ai .mname{color:var(--ac)}
+.msg.user .mname{text-align:right}
+.bubble{padding:10px 14px;border-radius:10px;font-size:13.5px;line-height:1.65;word-break:break-word}
+.msg.ai .bubble{background:var(--s1);border:1px solid var(--b1);color:var(--t1);border-radius:2px 10px 10px 10px}
+.msg.user .bubble{background:var(--ac2);color:#dce8ff;border-radius:10px 2px 10px 10px}
+.bubble pre{
+  background:var(--bg);border:1px solid var(--b1);border-radius:7px;
+  padding:11px;margin:8px 0;overflow-x:auto;
+  font-family:var(--mono);font-size:12px;line-height:1.55;position:relative;
+}
+.bubble code{font-family:var(--mono);font-size:12px;background:var(--s3);padding:2px 5px;border-radius:3px;color:var(--gld)}
+.bubble pre code{background:transparent;padding:0;color:var(--t2)}
+
+/* code block action buttons */
+.code-actions{
+  display:flex;gap:5px;
+  position:absolute;top:7px;right:7px;
+  opacity:0;transition:opacity 0.15s;
+}
+.bubble pre:hover .code-actions{opacity:1}
+.cbtn{
+  padding:3px 9px;border:none;border-radius:4px;
+  color:#fff;font-size:10px;font-weight:700;font-family:var(--sans);
+  cursor:pointer;transition:all 0.15s;
+}
+.cbtn.copy{background:var(--b2)}
+.cbtn.copy:hover{background:var(--b3,#3d4656)}
+.cbtn.inject{background:var(--ac)}
+.cbtn.inject:hover{background:#3a7dc0}
+
+/* on mobile always show */
+@media(max-width:600px){.code-actions{opacity:1}}
+
+.typing-wrap{display:flex;gap:5px;align-items:center;padding:8px 0}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--ac);animation:td 1.2s ease-in-out infinite}
+.tdot:nth-child(2){animation-delay:.2s}.tdot:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:36px 20px;text-align:center;margin:auto;max-width:460px}
+.wico{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--ac2),var(--ac));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff}
+.welcome h2{font-size:20px;font-weight:800;letter-spacing:-0.4px}
+.welcome p{font-size:13px;color:var(--t2);line-height:1.6}
+.qgrid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:6px}
+.qbtn{padding:6px 13px;background:var(--s2);border:1px solid var(--b2);border-radius:20px;color:var(--t2);font-size:11.5px;cursor:pointer;transition:all 0.15s;font-family:var(--sans)}
+.qbtn:hover{border-color:var(--ac);color:var(--ac);background:var(--s3)}
+
+.cinput{padding:10px 14px;background:var(--s1);border-top:1px solid var(--b1);flex-shrink:0}
+.irow{display:flex;gap:8px;align-items:flex-end;background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:8px 10px;transition:border-color 0.2s}
+.irow:focus-within{border-color:var(--ac)}
+#cinput{flex:1;background:transparent;border:none;outline:none;color:var(--t1);font-family:var(--sans);font-size:13.5px;resize:none;max-height:110px;min-height:20px;line-height:1.5}
+#cinput::placeholder{color:var(--t3)}
+.sbtn{width:32px;height:32px;border-radius:7px;background:var(--ac);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s,transform 0.1s}
+.sbtn:hover{background:#3a7dc0}
+.sbtn:active{transform:scale(0.92)}
+.sbtn:disabled{background:var(--s3);cursor:not-allowed}
+.ihint{font-size:10.5px;color:var(--t3);margin-top:5px;padding-left:2px}
+
+/* ── EDITOR PANELS ── */
+#p-web,#p-app{flex-direction:column}
+.etoolbar{display:flex;align-items:center;gap:8px;padding:0 12px;height:42px;background:var(--s1);border-bottom:1px solid var(--b1);flex-shrink:0}
+.etitle{font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;flex:1}
+.lang-tag{font-family:var(--mono);font-size:10px;color:var(--t3);background:var(--s3);padding:2px 7px;border-radius:4px}
+.btn-run{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--grn);border:none;border-radius:7px;color:var(--bg);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.15s;letter-spacing:0.3px}
+.btn-run:hover{opacity:0.85;transform:translateY(-1px)}
+.btn-run svg{flex-shrink:0}
+.btn-ai{display:flex;align-items:center;gap:6px;padding:6px 13px;background:var(--acfx);border:1px solid var(--ac2);border-radius:7px;color:var(--ac);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.15s}
+.btn-ai:hover{background:var(--ac);color:#fff}
+.ftabs{display:flex;background:var(--bg);border-bottom:1px solid var(--b1);overflow-x:auto;scrollbar-width:none}
+.ftabs::-webkit-scrollbar{display:none}
+.ftab{padding:6px 15px;font-family:var(--mono);font-size:11px;color:var(--t3);cursor:pointer;border-right:1px solid var(--b1);border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;user-select:none}
+.ftab:hover{color:var(--t2);background:var(--s2)}
+.ftab.active{color:var(--ac);background:var(--s1);border-bottom-color:var(--ac)}
+.carea{flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
+.carea::-webkit-scrollbar{width:6px;height:6px}
+.carea::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.cinp{width:100%;min-height:100%;background:transparent;border:none;outline:none;color:var(--t2);font-family:var(--mono);font-size:12.5px;line-height:1.65;padding:14px;resize:none;tab-size:2;white-space:pre;overflow-wrap:normal}
+
+/* ── MODALS ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.show{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:22px;width:100%;max-width:340px;animation:up 0.2s ease}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:14px}
+.mopt{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:9px;border:1px solid var(--b1);margin-bottom:7px;cursor:pointer;transition:all 0.15s}
+.mopt:hover{border-color:var(--ac);background:var(--s2)}
+.mopt.selected{border-color:var(--ac);background:var(--s3)}
+.mopt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mopt-info h4{font-size:12.5px;font-weight:700;margin-bottom:2px}
+.mopt-info p{font-size:10.5px;color:var(--t3);font-family:var(--mono)}
+.mclose{width:100%;padding:9px;background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--t2);cursor:pointer;font-size:12.5px;font-family:var(--sans);margin-top:6px;transition:background 0.15s}
+.mclose:hover{background:var(--s3)}
+.ai-modal{max-width:440px}
+.ai-lbl{font-size:11.5px;color:var(--t2);margin-bottom:8px;line-height:1.5}
+.ai-inp{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--t1);font-family:var(--sans);font-size:13px;padding:10px 12px;resize:vertical;min-height:80px;outline:none;margin-bottom:10px}
+.ai-inp:focus{border-color:var(--ac)}
+.ai-gbtn{width:100%;padding:10px;background:var(--ac);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:background 0.15s;margin-bottom:6px}
+.ai-gbtn:hover{background:#3a7dc0}
+.ai-gbtn:disabled{background:var(--s3);cursor:not-allowed}
+.ai-status{font-size:11px;color:var(--t3);text-align:center;min-height:16px}
+
+/* user menu modal */
+.user-modal{max-width:300px}
+.user-info-box{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:14px;margin-bottom:14px}
+.user-info-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.user-info-type{font-size:11px;color:var(--t3);font-family:var(--mono)}
+.user-info-type.pro-color{color:var(--org)}
+.rate-info{font-size:11px;color:var(--t2);margin-top:8px;font-family:var(--mono)}
+.pro-upsell{
+  background:linear-gradient(135deg,rgba(212,132,58,0.12),rgba(212,132,58,0.06));
+  border:1px solid rgba(212,132,58,0.3);border-radius:10px;
+  padding:14px;margin-bottom:14px;
+}
+.pro-upsell h4{font-size:13px;font-weight:700;color:var(--org);margin-bottom:6px}
+.pro-upsell p{font-size:11.5px;color:var(--t2);line-height:1.5;margin-bottom:10px}
+.pro-btn{
+  width:100%;padding:9px;background:var(--org);border:none;border-radius:8px;
+  color:#fff;font-size:12.5px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:opacity 0.15s;
+}
+.pro-btn:hover{opacity:0.85}
+.logout-btn{
+  width:100%;padding:9px;background:rgba(196,80,80,0.15);border:1px solid rgba(196,80,80,0.3);
+  border-radius:8px;color:var(--red);cursor:pointer;font-size:12.5px;font-weight:700;
+  font-family:var(--sans);transition:all 0.15s;
+}
+.logout-btn:hover{background:var(--red);color:#fff}
+
+/* divider */
+.mdivider{height:1px;background:var(--b1);margin:10px 0}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .topbar{height:44px;padding:0 10px;gap:6px}
+  .logo{font-size:13px;gap:5px;margin-right:2px}
+  .logo-v{width:22px;height:22px;font-size:9px;border-radius:5px}
+  .nav-btn{font-size:10px;padding:4px 8px;border-radius:5px}
+  .model-pill{padding:4px 7px}
+  .pill-txt{display:none}
+  .dot{width:5px;height:5px}
+  .user-name{display:none}
+  .pro-tag{display:none}
+  .body{height:calc(100dvh - 44px)}
+  .messages{padding:12px 10px;gap:10px}
+  .bubble{font-size:13px;padding:9px 12px}
+  .bubble pre{font-size:11px;padding:9px}
+  .bubble code{font-size:11px}
+  .av{width:26px;height:26px;font-size:10px;border-radius:6px}
+  .mbody{max-width:calc(100% - 38px)}
+  .mname{font-size:9px}
+  .welcome{padding:24px 14px;gap:10px}
+  .welcome h2{font-size:17px}
+  .welcome p{font-size:12px}
+  .wico{width:44px;height:44px;font-size:17px}
+  .qgrid{gap:6px}
+  .qbtn{font-size:11px;padding:5px 11px}
+  .cinput{padding:8px 10px}
+  .irow{padding:7px 8px;gap:6px}
+  #cinput{font-size:13px}
+  .sbtn{width:28px;height:28px;border-radius:6px}
+  .ihint{font-size:9.5px}
+  .etoolbar{height:38px;padding:0 10px;gap:5px}
+  .etitle{font-size:10px}
+  .lang-tag{font-size:9px;padding:1px 5px}
+  .btn-run span,.btn-ai span{display:none}
+  .btn-run{padding:5px 10px;font-size:10px}
+  .btn-ai{padding:5px 9px;font-size:10px}
+  .ftab{font-size:10px;padding:5px 10px}
+  .cinp{font-size:11.5px;padding:10px;line-height:1.6}
+  .modal{padding:18px 16px;border-radius:12px}
+  .modal h3{font-size:14px}
+  .mopt{padding:9px 11px}
+  .mopt-info h4{font-size:12px}
+  .mopt-info p{font-size:10px}
+  .ai-modal{max-width:100%}
+  .ai-lbl{font-size:11px}
+  .ai-inp{font-size:12px;padding:9px 10px;min-height:70px}
+  .ai-gbtn{font-size:12px;padding:9px}
+  .rate-bar{padding:5px 10px}
+  .rate-label{font-size:9px}
+  .rate-count{font-size:9px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN (REMOVED - now modal based) ══════════════ -->
+<div style="display:none" id="login-screen-unused">
+  <div class="login-box" id="login-box">
+    <!-- LOGIN VIEW -->
+    <div id="view-login">
+      <div class="login-logo">
+        <div class="login-v">V4</div>
+        <div>
+          <div class="login-title">VenzRyk 4</div>
+        </div>
+      </div>
+      <p class="login-sub">Masuk untuk menggunakan AI Studio</p>
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <input class="login-input" id="li-user" type="text" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" id="li-pass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="login-btn" onclick="doLogin()">Masuk</button>
+      <p class="login-err" id="login-err"></p>
+      <div class="login-reg">Belum punya akun? <a onclick="showView('view-register')">Daftar sekarang</a></div>
+    </div>
+
+    <!-- REGISTER VIEW -->
+    <div id="view-register" style="display:none">
+      <button class="reg-back" onclick="showView('view-login')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Kembali
+      </button>
+      <div class="login-logo">
+        <div class="login-v">V4</div>
+        <div class="login-title">Buat Akun</div>
+      </div>
+      <p class="login-sub">Akun disimpan di perangkat ini. Free user: 20 pesan/jam.</p>
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <input class="login-input" id="reg-user" type="text" placeholder="min 3 karakter">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" id="reg-pass" type="password" placeholder="min 4 karakter">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Konfirmasi Password</label>
+        <input class="login-input" id="reg-pass2" type="password" placeholder="ulangi password" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="login-btn" onclick="doRegister()">Daftar</button>
+      <p class="login-err" id="reg-err"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="main-app" style="display:none;height:100%;flex-direction:column;flex:1">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-v">V4</div>
+    VenzRyk 4
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" data-tab="chat" onclick="switchTab(this,'chat')">Chat</button>
+    <button class="nav-btn" data-tab="web" onclick="switchTab(this,'web')">Web Editor</button>
+    <button class="nav-btn" data-tab="app" onclick="switchTab(this,'app')">App Editor</button>
+  </div>
+  <div class="topright">
+    <div class="model-pill" onclick="openModal('m-model')">
+      <div class="dot"></div>
+      <span class="pill-txt" id="pill-lbl">Gemini 2.5</span>
+    </div>
+    <div class="user-badge" onclick="openModal('m-user')" id="user-badge">
+      <div class="user-av" id="user-av">U</div>
+      <span class="user-name" id="user-name-lbl">user</span>
+    </div>
+  </div>
+</div>
+
+<!-- RATE LIMIT BAR (only for free) -->
+<div class="rate-bar" id="rate-bar">
+  <span class="rate-label" id="rate-label">Pesan:</span>
+  <div class="rate-track"><div class="rate-fill" id="rate-fill" style="width:0%"></div></div>
+  <span class="rate-count" id="rate-count">0/20</span>
+</div>
+
+<div class="body">
+<div class="workspace">
+
+  <!-- CHAT -->
+  <div class="panel active" id="p-chat">
+    <div class="messages" id="msgs">
+      <div class="welcome" id="welcome">
+        <div class="wico">V4</div>
+        <h2>VenzRyk 4</h2>
+        <p>Model AI dari VenzRyk Studio. Tanya apa saja atau minta generate kode — bisa langsung di-copy atau diinjek ke editor.</p>
+        <div class="qgrid">
+          <button class="qbtn" onclick="qs('Buatin full landing page HTML CSS dark theme')">Landing page dark</button>
+          <button class="qbtn" onclick="qs('Buatin full XML layout Android login screen')">Android login XML</button>
+          <button class="qbtn" onclick="qs('Buatin animasi CSS loading spinner')">CSS spinner</button>
+          <button class="qbtn" onclick="qs('Jelaskan DEX class encryption Android')">DEX encryption</button>
+        </div>
+      </div>
+    </div>
+    <div class="cinput">
+      <div class="irow">
+        <textarea id="cinput" placeholder="Tanya atau minta kode ke VenzRyk 4..." rows="1"
+          onkeydown="onKey(event)" oninput="grow(this)"></textarea>
+        <button class="sbtn" id="sbtn" onclick="send()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+      <div class="ihint">Enter kirim — Shift+Enter baris baru</div>
+    </div>
+  </div>
+
+  <!-- WEB EDITOR -->
+  <div class="panel" id="p-web">
+    <div class="etoolbar">
+      <span class="etitle">Web Editor</span>
+      <span class="lang-tag" id="web-lang">HTML</span>
+      <button class="btn-ai" onclick="openAiModal('web')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <span>AI Generate</span>
+      </button>
+      <button class="btn-run" onclick="previewWeb()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Preview</span>
+      </button>
+    </div>
+    <div class="ftabs" id="web-ftabs">
+      <div class="ftab active" onclick="wFile(this,'html')">index.html</div>
+      <div class="ftab" onclick="wFile(this,'css')">style.css</div>
+      <div class="ftab" onclick="wFile(this,'js')">script.js</div>
+    </div>
+    <div class="carea">
+      <textarea class="cinp" id="w-html" spellcheck="false">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;My Page&lt;/title&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container"&gt;
+    &lt;h1&gt;Hello World&lt;/h1&gt;
+    &lt;p&gt;Edit kode di sini lalu klik Preview.&lt;/p&gt;
+    &lt;button onclick="greet()"&gt;Click Me&lt;/button&gt;
+    &lt;p id="out"&gt;&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+      <textarea class="cinp" id="w-css" spellcheck="false" style="display:none">body{font-family:'Segoe UI',sans-serif;background:#0d1117;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.container{background:#161b22;padding:32px;border-radius:12px;border:1px solid #30363d;text-align:center;max-width:380px;width:90%}
+h1{color:#e6edf3;font-size:24px;margin-bottom:10px}
+p{color:#8b949e;font-size:14px;line-height:1.6}
+button{background:#238636;color:#fff;border:none;padding:9px 22px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:14px;transition:background 0.2s}
+button:hover{background:#2ea043}
+#out{color:#58a6ff;font-weight:600;margin-top:10px}</textarea>
+      <textarea class="cinp" id="w-js" spellcheck="false" style="display:none">function greet(){
+  const msgs=['Halo dari VenzRyk 4','Keep building','You got this','Stay focused'];
+  document.getElementById('out').textContent=msgs[Math.floor(Math.random()*msgs.length)];
+}</textarea>
+    </div>
+  </div>
+
+  <!-- APP EDITOR -->
+  <div class="panel" id="p-app">
+    <div class="etoolbar">
+      <span class="etitle">App Editor</span>
+      <span class="lang-tag" id="app-lang">XML</span>
+      <button class="btn-ai" onclick="openAiModal('app')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <span>AI Generate</span>
+      </button>
+      <button class="btn-run" onclick="previewApp()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <span>Preview</span>
+      </button>
+    </div>
+    <div class="ftabs" id="app-ftabs">
+      <div class="ftab active" onclick="aFile(this,'xml')">layout.xml</div>
+      <div class="ftab" onclick="aFile(this,'java')">MainActivity.java</div>
+      <div class="ftab" onclick="aFile(this,'manifest')">AndroidManifest.xml</div>
+      <div class="ftab" onclick="aFile(this,'gradle')">build.gradle</div>
+    </div>
+    <div class="carea">
+      <textarea class="cinp" id="a-xml" spellcheck="false">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:gravity="center"
+  android:background="#0d0f12"
+  android:padding="24dp"&gt;
+
+  &lt;TextView
+    android:id="@+id/tvTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="VenzRyk App"
+    android:textSize="28sp"
+    android:textColor="#e6e9f0"
+    android:textStyle="bold"
+    android:layout_marginBottom="8dp"/&gt;
+
+  &lt;Button
+    android:id="@+id/btnMain"
+    android:layout_width="200dp"
+    android:layout_height="48dp"
+    android:text="Say Hello"
+    android:backgroundTint="#4d8fd6"
+    android:textColor="#ffffff"
+    android:textStyle="bold"/&gt;
+
+  &lt;TextView
+    android:id="@+id/tvOut"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text=""
+    android:textSize="15sp"
+    android:textColor="#52b06a"
+    android:layout_marginTop="20dp"/&gt;
+
+&lt;/LinearLayout&gt;</textarea>
+      <textarea class="cinp" id="a-java" spellcheck="false" style="display:none">package com.venzryk.app;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+    private TextView tvOut;
+    private Button btnMain;
+    private int count = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        tvOut   = (TextView) findViewById(R.id.tvOut);
+        btnMain = (Button)   findViewById(R.id.btnMain);
+        btnMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                count++;
+                tvOut.setText("Halo! Click ke-" + count);
+            }
+        });
+    }
+}</textarea>
+      <textarea class="cinp" id="a-manifest" spellcheck="false" style="display:none">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.venzryk.app"
+  android:versionCode="1"
+  android:versionName="1.0"&gt;
+  &lt;uses-sdk android:minSdkVersion="14" android:targetSdkVersion="30"/&gt;
+  &lt;application android:label="VenzRyk App" android:theme="@android:style/Theme.NoTitleBar"&gt;
+    &lt;activity android:name=".MainActivity" android:label="VenzRyk App"&gt;
+      &lt;intent-filter&gt;
+        &lt;action android:name="android.intent.action.MAIN"/&gt;
+        &lt;category android:name="android.intent.category.LAUNCHER"/&gt;
+      &lt;/intent-filter&gt;
+    &lt;/activity&gt;
+  &lt;/application&gt;
+&lt;/manifest&gt;</textarea>
+      <textarea class="cinp" id="a-gradle" spellcheck="false" style="display:none">apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        applicationId "com.venzryk.app"
+        minSdkVersion 14
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+    }
+}
+dependencies {
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+}</textarea>
+    </div>
+  </div>
+
+</div>
+</div>
+</div><!-- end main-app -->
+
+<!-- MODEL MODAL -->
+<div class="overlay" id="m-model" onclick="oclose(event,'m-model')">
+  <div class="modal">
+    <h3>Pilih Model AI</h3>
+    <div class="mopt" id="opt-poll" onclick="setModel('pollinations')">
+      <div class="mopt-dot" style="background:#52b06a"></div>
+      <div class="mopt-info"><h4>Pollinations AI</h4><p>free — openai endpoint</p></div>
+    </div>
+    <div class="mopt selected" id="opt-gem" onclick="setModel('gemini')">
+      <div class="mopt-dot" style="background:#4d8fd6"></div>
+      <div class="mopt-info"><h4>Gemini 2.5 Flash</h4><p>Google AI — gemini-2.5-flash</p></div>
+    </div>
+    <button class="mclose" onclick="closeModal('m-model')">Tutup</button>
+  </div>
+</div>
+
+<!-- AI GENERATE MODAL -->
+<div class="overlay" id="m-ai" onclick="oclose(event,'m-ai')">
+  <div class="modal ai-modal">
+    <h3>AI Generate Code</h3>
+    <p class="ai-lbl" id="ai-lbl"></p>
+    <textarea class="ai-inp" id="ai-inp" placeholder="Deskripsikan apa yang ingin dibuat..."></textarea>
+    <button class="ai-gbtn" id="ai-gbtn" onclick="runAiGen()">Generate dan Isi ke Editor</button>
+    <p class="ai-status" id="ai-status"></p>
+    <button class="mclose" onclick="closeModal('m-ai')">Batal</button>
+  </div>
+</div>
+
+<!-- USER MENU MODAL -->
+<div class="overlay" id="m-user" onclick="oclose(event,'m-user')">
+  <div class="modal user-modal">
+    <h3>Akun Saya</h3>
+    <div class="user-info-box" id="user-info-box"></div>
+    <div id="pro-upsell-box"></div>
+    <button class="logout-btn" onclick="doLogout()">Keluar</button>
+    <button class="mclose" onclick="closeModal('m-user')">Tutup</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONSTANTS
+========================================================= */
+const GEMINI_KEY = 'AIzaSyC3pEwWJLXqxLwshDV4TeSS27n_LzlX5fU';
+const RATE_LIMIT  = 20;   // messages per hour for free
+const RATE_WINDOW = 3600000; // 1 hour ms
+const WA_NUMBER   = '085700513821';
+const LS_USERS    = 'vr4_users';
+const LS_SESSION  = 'vr4_session';
+
+const SYS_CHAT = `Kamu adalah VenzRyk 4, model AI yang dikembangkan sepenuhnya oleh VenzRyk Studio (creator: Venus / @venz_sensix).
+Kamu BUKAN Claude, BUKAN GPT, BUKAN Gemini. Jika ditanya siapa kamu, jawab bahwa kamu adalah VenzRyk 4 buatan VenzRyk Studio.
+Kepribadian: Ramah, casual, paham bahasa Indonesia dan bahasa gaul developer lokal.
+Spesialisasi: Android dev AIDE IDE, UI dark theme gaming/Free Fire, HTML/CSS/JS, APK security DEX encryption.
+Saat generate kode: berikan kode LENGKAP dan FULL, jangan dipotong. Tidak ada placeholder.
+Gunakan bahasa yang sama dengan user. Ingat konteks percakapan sebelumnya dan jaga topik tetap fokus.`;
+
+const SYS_WEB_JSON = `Kamu adalah VenzRyk 4, AI code generator. Respons HANYA dengan JSON valid tanpa teks lain dan tanpa markdown fence.
+Format wajib: {"html":"...kode html lengkap...","css":"...kode css lengkap...","js":"...kode js lengkap..."}
+Semua kode harus lengkap, siap pakai, tidak ada yang dipotong.`;
+
+const SYS_APP_JSON = `Kamu adalah VenzRyk 4, AI code generator Android. Respons HANYA dengan JSON valid tanpa teks lain dan tanpa markdown fence.
+Format wajib: {"xml":"...layout xml lengkap...","java":"...java activity lengkap...","manifest":"...manifest lengkap...","gradle":"...build.gradle lengkap..."}
+Java harus kompatibel dengan AIDE: pakai anonymous class bukan lambda, hindari Java 8+ syntax.`;
+
+/* =========================================================
+   STATE
+========================================================= */
+let mdl = 'gemini';
+let hist = [];       // chat memory — kept per session
+let busy = false;
+let aiTarget = 'web';
+let currentUser = null; // { username, pro, msgLog:[] }
+
+/* =========================================================
+   AUTH — localStorage based
+========================================================= */
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(LS_USERS) || '{}'); } catch { return {}; }
+}
+function saveUsers(u) { localStorage.setItem(LS_USERS, JSON.stringify(u)); }
+function getSession() {
+  try { return JSON.parse(localStorage.getItem(LS_SESSION) || 'null'); } catch { return null; }
+}
+function saveSession(username) { localStorage.setItem(LS_SESSION, JSON.stringify(username)); }
+function clearSession() { localStorage.removeItem(LS_SESSION); }
+
+function showView(id) {
+  ['view-login','view-register'].forEach(v => {
+    document.getElementById(v).style.display = v === id ? '' : 'none';
+  });
+  document.getElementById('login-err').textContent = '';
+  document.getElementById('reg-err').textContent = '';
+}
+
+function doLogin() {
+  const u = document.getElementById('li-user').value.trim();
+  const p = document.getElementById('li-pass').value;
+  const err = document.getElementById('login-err');
+  if (!u || !p) { err.textContent = 'Username dan password wajib diisi.'; return; }
+  const users = getUsers();
+  if (!users[u]) { err.textContent = 'Username tidak ditemukan.'; return; }
+  if (users[u].password !== btoa(p)) { err.textContent = 'Password salah.'; return; }
+  saveSession(u);
+  bootApp(u);
+}
+
+function doRegister() {
+  const u = document.getElementById('reg-user').value.trim();
+  const p = document.getElementById('reg-pass').value;
+  const p2= document.getElementById('reg-pass2').value;
+  const err = document.getElementById('reg-err');
+  if (u.length < 3) { err.textContent = 'Username minimal 3 karakter.'; return; }
+  if (p.length < 4) { err.textContent = 'Password minimal 4 karakter.'; return; }
+  if (p !== p2)     { err.textContent = 'Password tidak cocok.'; return; }
+  const users = getUsers();
+  if (users[u])     { err.textContent = 'Username sudah dipakai.'; return; }
+  users[u] = { password: btoa(p), pro: false, msgLog: [] };
+  saveUsers(users);
+  saveSession(u);
+  bootApp(u);
+}
+
+function bootApp(username) {
+  const users = getUsers();
+  currentUser = { username, ...users[username] };
+
+  // Show app
+  document.getElementById('login-screen').style.display = 'none';
+  const app = document.getElementById('main-app');
+  app.style.display = 'flex';
+
+  // Update topbar
+  const av = document.getElementById('user-av');
+  av.textContent = username[0].toUpperCase();
+  if (currentUser.pro) { av.classList.add('pro'); }
+  document.getElementById('user-name-lbl').textContent = username;
+
+  // Add pro tag if pro
+  const nameLbl = document.getElementById('user-name-lbl');
+  if (currentUser.pro) {
+    nameLbl.insertAdjacentHTML('afterend', '<span class="pro-tag">PRO</span>');
+  }
+
+  // Rate bar
+  updateRateBar();
+  if (currentUser.pro) document.getElementById('rate-bar').style.display = 'none';
+}
+
+function doLogout() {
+  clearSession();
+  currentUser = null;
+  hist = [];
+  // Clear messages
+  const msgs = document.getElementById('msgs');
+  msgs.innerHTML = '<div class="welcome" id="welcome"><div class="wico">V4</div><h2>VenzRyk 4</h2><p>Model AI dari VenzRyk Studio. Tanya apa saja atau minta generate kode — bisa langsung di-copy atau diinjek ke editor.</p><div class="qgrid"><button class="qbtn" onclick="qs(\'Buatin full landing page HTML CSS dark theme\')">Landing page dark</button><button class="qbtn" onclick="qs(\'Buatin full XML layout Android login screen\')">Android login XML</button><button class="qbtn" onclick="qs(\'Buatin animasi CSS loading spinner\')">CSS spinner</button><button class="qbtn" onclick="qs(\'Jelaskan DEX class encryption Android\')">DEX encryption</button></div></div>';
+  // Reset topbar
+  document.getElementById('user-av').className = 'user-av';
+  document.getElementById('user-av').textContent = 'U';
+  document.getElementById('user-name-lbl').textContent = 'user';
+  const proTag = document.querySelector('.pro-tag');
+  if (proTag) proTag.remove();
+  document.getElementById('rate-bar').style.display = '';
+
+  closeModal('m-user');
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('li-user').value = '';
+  document.getElementById('li-pass').value = '';
+  showView('view-login');
+}
+
+/* ── RATE LIMIT ── */
+function getUsageThisHour() {
+  if (!currentUser) return 0;
+  const now = Date.now();
+  const users = getUsers();
+  const log = users[currentUser.username]?.msgLog || [];
+  return log.filter(t => now - t < RATE_WINDOW).length;
+}
+
+function recordMessage() {
+  const users = getUsers();
+  const u = users[currentUser.username];
+  const now = Date.now();
+  u.msgLog = (u.msgLog || []).filter(t => now - t < RATE_WINDOW);
+  u.msgLog.push(now);
+  saveUsers(users);
+  currentUser.msgLog = u.msgLog;
+}
+
+function canSend() {
+  if (!currentUser) return false;
+  if (currentUser.pro) return true;
+  return getUsageThisHour() < RATE_LIMIT;
+}
+
+function updateRateBar() {
+  if (!currentUser || currentUser.pro) return;
+  const used = getUsageThisHour();
+  const pct  = (used / RATE_LIMIT) * 100;
+  const fill = document.getElementById('rate-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'rate-fill' + (pct >= 100 ? ' full' : pct >= 70 ? ' warn' : '');
+  document.getElementById('rate-count').textContent = used + '/' + RATE_LIMIT;
+  const remaining = RATE_LIMIT - used;
+  document.getElementById('rate-label').textContent = remaining > 0 ? 'Sisa:' : 'Habis:';
+  document.getElementById('rate-count').style.color = pct >= 100 ? 'var(--red)' : pct >= 70 ? 'var(--org)' : '';
+}
+
+/* ── USER MENU ── */
+function openUserMenu() {
+  const used = getUsageThisHour();
+  const isPro = currentUser?.pro;
+  document.getElementById('user-info-box').innerHTML = `
+    <div class="user-info-name">${currentUser?.username}</div>
+    <div class="user-info-type ${isPro?'pro-color':''}">${isPro ? 'Pro User — Unlimited' : 'Free User'}</div>
+    ${!isPro ? `<div class="rate-info">Pesan jam ini: ${used}/${RATE_LIMIT}</div>` : ''}
+  `;
+  document.getElementById('pro-upsell-box').innerHTML = isPro ? '' : `
+    <div class="pro-upsell">
+      <h4>Upgrade ke Pro</h4>
+      <p>Pesan unlimited, tanpa rate limit, prioritas akses model terbaru.</p>
+      <button class="pro-btn" onclick="upgradePro()">Upgrade via WhatsApp</button>
+    </div>
+  `;
+}
+
+function upgradePro() {
+  const msg = encodeURIComponent(`Halo, saya mau upgrade akun VenzRyk 4 ke Pro. Username: ${currentUser?.username}`);
+  window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, '_blank');
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+function switchTab(el, tab) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('p-' + tab).classList.add('active');
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+function openModal(id) {
+  if (id === 'm-user') openUserMenu();
+  document.getElementById(id).classList.add('show');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function oclose(e, id)  { if (e.target === e.currentTarget) closeModal(id); }
+
+function setModel(m) {
+  mdl = m;
+  document.querySelectorAll('.mopt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('opt-' + (m === 'gemini' ? 'gem' : 'poll')).classList.add('selected');
+  document.getElementById('pill-lbl').textContent = m === 'gemini' ? 'Gemini 2.5' : 'Pollinations';
+  closeModal('m-model');
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
+function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }
+function grow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 110) + 'px'; }
+function qs(t)    { document.getElementById('cinput').value = t; send(); }
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderBubble(text) {
+  // code blocks with copy + inject buttons
+  text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const ll = lang.toLowerCase();
+    const tid = ll==='html'?'w-html': ll==='css'?'w-css': (ll==='js'||ll==='javascript')?'w-js': ll==='xml'?'a-xml': ll==='java'?'a-java': null;
+    const injBtn = tid ? `<button class="cbtn inject" onclick="inject(this,'${tid}')">Inject</button>` : '';
+    return `<pre data-raw="${encodeURIComponent(code.trim())}"><div class="code-actions"><button class="cbtn copy" onclick="copyCode(this)">Copy</button>${injBtn}</div><code>${esc(code.trim())}</code></pre>`;
+  });
+  text = text.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  text = text.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
+
+function copyCode(btn) {
+  const raw = decodeURIComponent(btn.closest('pre').dataset.raw || '');
+  const txt = raw.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+  navigator.clipboard.writeText(txt).then(() => {
+    btn.textContent = 'Copied';
+    btn.style.background = 'var(--grn)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; }, 2000);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'Copied'; btn.style.background = 'var(--grn)';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; }, 2000);
+  });
+}
+
+function inject(btn, tid) {
+  const raw = decodeURIComponent(btn.closest('pre').dataset.raw || '');
+  if (!raw) return;
+  const el = document.getElementById(tid);
+  if (!el) return;
+  el.value = raw.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');
+  btn.textContent = 'Done';
+  btn.style.background = 'var(--grn)';
+  setTimeout(() => { btn.textContent = 'Inject'; btn.style.background = ''; }, 2200);
+  const webMap = {'w-html':'html','w-css':'css','w-js':'js'};
+  const appMap = {'a-xml':'xml','a-java':'java','a-manifest':'manifest','a-gradle':'gradle'};
+  if (webMap[tid]) { goPanel('web'); wFileById(webMap[tid]); }
+  else if (appMap[tid]) { goPanel('app'); aFileById(appMap[tid]); }
+}
+
+function goPanel(tab) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const btn = document.querySelector(`[data-tab="${tab}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('p-' + tab).classList.add('active');
+}
+
+function addMsg(role, html) {
+  const w = document.getElementById('welcome'); if (w) w.remove();
+  const area = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  const uname = role === 'user' ? (currentUser?.username || 'You') : 'VenzRyk 4';
+  const avTxt = role === 'ai' ? 'V4' : (currentUser?.username?.[0]?.toUpperCase() || 'U');
+  d.innerHTML = `
+    <div class="av">${avTxt}</div>
+    <div class="mbody">
+      <div class="mname">${uname}</div>
+      <div class="bubble">${html}</div>
+    </div>`;
+  area.appendChild(d);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const area = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg ai'; d.id = 'typing';
+  d.innerHTML = `<div class="av">V4</div><div class="mbody"><div class="mname">VenzRyk 4</div><div class="bubble"><div class="typing-wrap"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div></div>`;
+  area.appendChild(d); area.scrollTop = area.scrollHeight;
+}
+function rmTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+
+async function send() {
+  if (busy) return;
+  if (!currentUser) return;
+
+  // Rate limit check
+  if (!canSend()) {
+    addMsg('ai', `<span style="color:var(--red)">Batas 20 pesan/jam sudah tercapai. Coba lagi nanti atau <strong style="color:var(--org);cursor:pointer" onclick="openModal('m-user')">upgrade ke Pro</strong> untuk unlimited.</span>`);
+    return;
+  }
+
+  const inp = document.getElementById('cinput');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = ''; inp.style.height = 'auto';
+  inp.disabled = true; document.getElementById('sbtn').disabled = true; busy = true;
+
+  addMsg('user', esc(text));
+  // Add to memory
+  hist.push({ role:'user', content: text });
+  showTyping();
+
+  try {
+    const reply = mdl === 'gemini'
+      ? await callGemini(SYS_CHAT, hist)
+      : await callPoll(SYS_CHAT, hist);
+
+    rmTyping();
+    addMsg('ai', renderBubble(reply));
+    hist.push({ role:'assistant', content: reply });
+
+    // Record usage
+    recordMessage();
+    updateRateBar();
+  } catch(err) {
+    rmTyping();
+    addMsg('ai', `<span style="color:var(--red)">Error: ${esc(err.message)}</span>`);
+  }
+
+  inp.disabled = false; document.getElementById('sbtn').disabled = false;
+  busy = false; inp.focus();
+}
+
+/* =========================================================
+   API — endpoints unchanged
+========================================================= */
+async function callPoll(sys, h) {
+  const messages = [{ role:'system', content:sys }, ...h.slice(-16)];
+  const r = await fetch('https://text.pollinations.ai/', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model:'openai', messages, temperature:0.7 })
+  });
+  if (!r.ok) throw new Error('Pollinations error ' + r.status);
+  const d = await r.json();
+  return d.choices?.[0]?.message?.content || 'Tidak ada respons.';
+}
+
+async function callGemini(sys, h) {
+  const contents = h.slice(-16).map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+  const r = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: sys }] },
+        contents: contents
+      })
+    }
+  );
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    throw new Error(e?.error?.message || 'Gemini error ' + r.status);
+  }
+  const d = await r.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text || 'Tidak ada respons.';
+}
+
+async function callForJson(sys, msg) {
+  const h = [{ role:'user', content: msg }];
+  let raw = mdl === 'gemini' ? await callGemini(sys, h) : await callPoll(sys, h);
+  return raw.replace(/^```[a-z]*\n?/i,'').replace(/\n?```$/i,'').trim();
+}
+
+/* =========================================================
+   WEB EDITOR
+========================================================= */
+function wFile(el, f) {
+  document.querySelectorAll('#web-ftabs .ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['html','css','js'].forEach(x => { document.getElementById('w-'+x).style.display = x===f?'block':'none'; });
+  document.getElementById('web-lang').textContent = {html:'HTML',css:'CSS',js:'JavaScript'}[f]||f;
+}
+function wFileById(f) {
+  const tabs = document.querySelectorAll('#web-ftabs .ftab');
+  const idx = {html:0,css:1,js:2}[f];
+  tabs.forEach(t=>t.classList.remove('active'));
+  if (tabs[idx]) tabs[idx].classList.add('active');
+  ['html','css','js'].forEach(x => { document.getElementById('w-'+x).style.display = x===f?'block':'none'; });
+  document.getElementById('web-lang').textContent = {html:'HTML',css:'CSS',js:'JavaScript'}[f]||f;
+}
+
+function previewWeb() {
+  const html = document.getElementById('w-html').value;
+  const css  = document.getElementById('w-css').value;
+  const js   = document.getElementById('w-js').value;
+  const body = html.replace(/<link[^>]*>/gi,'').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
+  const siteDoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body>${body}<script>${js}<\/script></body></html>`;
+  const win = window.open('','_blank');
+  win.document.open(); win.document.write(buildPreviewPage(siteDoc,'web')); win.document.close();
+}
+
+/* =========================================================
+   APP EDITOR
+========================================================= */
+function aFile(el, f) {
+  document.querySelectorAll('#app-ftabs .ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['xml','java','manifest','gradle'].forEach(x => { document.getElementById('a-'+x).style.display = x===f?'block':'none'; });
+  document.getElementById('app-lang').textContent = {xml:'XML',java:'Java',manifest:'XML',gradle:'Groovy'}[f]||f;
+}
+function aFileById(f) {
+  const tabs = document.querySelectorAll('#app-ftabs .ftab');
+  const idx = {xml:0,java:1,manifest:2,gradle:3}[f];
+  tabs.forEach(t=>t.classList.remove('active'));
+  if (tabs[idx]!==undefined) tabs[idx].classList.add('active');
+  ['xml','java','manifest','gradle'].forEach(x => { document.getElementById('a-'+x).style.display = x===f?'block':'none'; });
+  document.getElementById('app-lang').textContent = {xml:'XML',java:'Java',manifest:'XML',gradle:'Groovy'}[f]||f;
+}
+
+function previewApp() {
+  const xml = document.getElementById('a-xml').value;
+  const win = window.open('','_blank');
+  win.document.open(); win.document.write(buildPreviewPage(buildAndroidPreview(xml),'app')); win.document.close();
+}
+
+/* =========================================================
+   PREVIEW PAGE BUILDER — iPhone Dynamic Island
+========================================================= */
+function buildPreviewPage(innerDoc, type) {
+  const encoded = encodeURIComponent(innerDoc);
+  return `<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${type==='app'?'App':'Web'} Preview — VenzRyk 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0b0d;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Syne',sans-serif;padding:56px 16px 32px}
+.pbar{position:fixed;top:0;left:0;right:0;height:46px;background:rgba(10,11,13,0.94);backdrop-filter:blur(12px);border-bottom:1px solid #1e232c;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100}
+.pbar-logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;color:#e6e9f0}
+.pbar-v{width:22px;height:22px;background:#4d8fd6;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff}
+.pbar-tag{font-size:10px;color:#4e5668;font-family:monospace;background:#1e232c;padding:2px 7px;border-radius:4px}
+.pbar-close{padding:5px 12px;background:#1e232c;border:1px solid #303744;border-radius:6px;color:#8a93a8;font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.15s}
+.pbar-close:hover{background:#252b36;color:#e6e9f0}
+.stage{display:flex;flex-direction:column;align-items:center;gap:16px}
+.stage-lbl{font-size:10px;color:#4e5668;letter-spacing:0.5px;text-transform:uppercase;font-weight:700}
+.iphone{position:relative;width:300px;height:640px;background:#080808;border-radius:52px;border:1px solid #1f1f1f;box-shadow:0 0 0 7px #111,0 0 0 8px #1e1e1e,0 40px 80px rgba(0,0,0,0.9),inset 0 0 0 1px #2a2a2a}
+.iphone::before{content:'';position:absolute;left:-8px;top:100px;width:4px;height:30px;background:#181818;border-radius:3px 0 0 3px;box-shadow:0 46px 0 #181818,0 84px 0 #181818}
+.iphone::after{content:'';position:absolute;right:-8px;top:120px;width:4px;height:62px;background:#181818;border-radius:0 3px 3px 0}
+.iphone-screen{position:absolute;inset:0;border-radius:52px;overflow:hidden;background:#0e0e0e}
+.di{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:110px;height:32px;background:#000;border-radius:22px;z-index:10;display:flex;align-items:center;justify-content:center;gap:9px;transition:all 0.45s cubic-bezier(0.34,1.56,0.64,1)}
+.di:hover{width:190px;height:42px}
+.di-cam{width:11px;height:11px;border-radius:50%;background:#0c0c0c;border:1.5px solid #1c1c1c;position:relative;flex-shrink:0}
+.di-cam::after{content:'';position:absolute;top:2.5px;left:2.5px;width:5.5px;height:5.5px;background:#070720;border-radius:50%}
+.di-cam::before{content:'';position:absolute;top:4px;left:4px;width:2px;height:2px;background:rgba(255,255,255,0.14);border-radius:50%;z-index:1}
+.di-sens{width:8px;height:8px;border-radius:50%;background:#120808;border:1px solid #221414;flex-shrink:0}
+.di-spk{width:36px;height:6px;background:#0d0d0d;border-radius:3px;flex-shrink:0}
+.iphone-content{position:absolute;inset:0;border-radius:52px;overflow:hidden}
+.iphone-content iframe{width:100%;height:100%;border:none;display:block}
+.home-ind{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:100px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;z-index:10}
+@media(max-width:480px){
+  body{padding:50px 10px 20px}
+  .iphone{width:240px;height:512px;border-radius:44px}
+  .di{width:90px;height:26px;top:11px}
+}
+</style>
+</head><body>
+<div class="pbar">
+  <div class="pbar-logo"><div class="pbar-v">V4</div>VenzRyk 4</div>
+  <span class="pbar-tag">${type} preview</span>
+  <button class="pbar-close" onclick="window.close()">Tutup</button>
+</div>
+<div class="stage">
+  <div class="stage-lbl">${type==='app'?'Android App Preview':'Web Preview'}</div>
+  <div class="iphone">
+    <div class="iphone-screen"></div>
+    <div class="di"><div class="di-sens"></div><div class="di-spk"></div><div class="di-cam"></div></div>
+    <div class="iphone-content"><iframe id="pf" srcdoc=""></iframe></div>
+    <div class="home-ind"></div>
+  </div>
+</div>
+<script>
+document.getElementById('pf').srcdoc=decodeURIComponent("${encoded.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}");
+<\/script></body></html>`;
+}
+
+/* =========================================================
+   ANDROID PREVIEW
+========================================================= */
+function buildAndroidPreview(xml) {
+  const bgM = xml.match(/android:background="(#[0-9a-fA-F]{3,8})"/);
+  const bg = bgM ? bgM[1] : '#f0f0f0';
+  const els = [];
+  let inEl = null, a = {};
+  for (const line of xml.split('\n')) {
+    const t = line.trim();
+    if      (/^<TextView\b/.test(t))  { inEl='tv';  a={}; }
+    else if (/^<Button\b/.test(t))    { inEl='btn'; a={}; }
+    else if (/^<EditText\b/.test(t))  { inEl='et';  a={}; }
+    else if (/^<CheckBox\b/.test(t))  { inEl='cb';  a={}; }
+    else if (/^<Switch\b/.test(t))    { inEl='sw';  a={}; }
+    if (inEl) {
+      const g = re => { const m = line.match(re); return m ? m[1] : undefined; };
+      const ps = [['text',/android:text="([^"]*)"/],['hint',/android:hint="([^"]*)"/],['color',/android:textColor="([^"]*)"/],['size',/android:textSize="([^"]*)"/],['bgTint',/android:backgroundTint="([^"]*)"/],['bgEl',/android:background="([^"]*)"/],['bold',/android:textStyle="([^"]*)"/],['id',/android:id="@\+id\/([^"]*)"/],['mb',/android:layout_marginBottom="([^"]*)"/],['mt',/android:layout_marginTop="([^"]*)"/]];
+      for (const [k,re] of ps) { const v=g(re); if(v!==undefined) a[k]=k==='bold'?v.includes('bold'):v; }
+      if (t.endsWith('/>') || t.startsWith('</')) { els.push({type:inEl,...a}); inEl=null; a={}; }
+    }
+  }
+  const sp = v => v ? parseFloat(v)*0.85+'px' : null;
+  const dp = v => v ? parseFloat(v)*0.75+'px' : null;
+  let body = '';
+  for (const el of els) {
+    const id = el.id?`id="${el.id}"`:'';
+    const ms = `margin-bottom:${dp(el.mb)||'8px'};${el.mt?'margin-top:'+dp(el.mt)+';':''}`;
+    if (el.type==='tv') body+=`<p ${id} style="color:${el.color||'#212121'};font-size:${sp(el.size)||'14px'};font-weight:${el.bold?700:400};${ms}line-height:1.4;">${el.text||''}</p>`;
+    else if (el.type==='btn') body+=`<button ${id} style="background:${el.bgTint||el.bgEl||'#2196F3'};color:${el.color||'#fff'};border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;${ms}cursor:pointer;min-width:150px;">${el.text||'Button'}</button>`;
+    else if (el.type==='et') body+=`<input ${id} placeholder="${el.hint||''}" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:9px 13px;color:${el.color||'#fff'};font-size:13px;${ms}width:85%;max-width:260px;outline:none;">`;
+    else if (el.type==='cb'||el.type==='sw') body+=`<label style="${ms}display:flex;align-items:center;gap:8px;color:#e0e0e0;font-size:13px;cursor:pointer;"><input type="checkbox" ${id}> ${el.text||''}</label>`;
+  }
+  if (!body) body=`<p style="color:rgba(255,255,255,0.2);font-size:12px;text-align:center;">Klik Preview untuk render XML</p>`;
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{background:${bg};min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;font-family:'Roboto',sans-serif;}</style></head><body>${body}</body></html>`;
+}
+
+/* =========================================================
+   AI GENERATE
+========================================================= */
+function openAiModal(target) {
+  aiTarget = target;
+  document.getElementById('ai-lbl').textContent = target === 'web'
+    ? 'Deskripsikan website. HTML + CSS + JS akan diisi semua secara otomatis.'
+    : 'Deskripsikan aplikasi Android. XML, Java, Manifest, Gradle akan diisi semua.';
+  document.getElementById('ai-inp').value = '';
+  document.getElementById('ai-status').textContent = '';
+  const btn = document.getElementById('ai-gbtn');
+  btn.disabled = false; btn.textContent = 'Generate dan Isi ke Editor';
+  openModal('m-ai');
+}
+
+async function runAiGen() {
+  const prompt = document.getElementById('ai-inp').value.trim(); if (!prompt) return;
+  const btn = document.getElementById('ai-gbtn');
+  const status = document.getElementById('ai-status');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  status.textContent = 'Menghubungi AI...';
+  try {
+    const sys = aiTarget === 'web' ? SYS_WEB_JSON : SYS_APP_JSON;
+    let raw = await callForJson(sys, prompt);
+    let parsed;
+    try { parsed = JSON.parse(raw); }
+    catch { const m = raw.match(/\{[\s\S]*\}/); if (m) parsed = JSON.parse(m[0]); else throw new Error('Respons AI tidak valid, coba ulangi.'); }
+    if (aiTarget === 'web') {
+      if (parsed.html !== undefined) document.getElementById('w-html').value = parsed.html;
+      if (parsed.css  !== undefined) document.getElementById('w-css').value  = parsed.css;
+      if (parsed.js   !== undefined) document.getElementById('w-js').value   = parsed.js;
+      closeModal('m-ai'); goPanel('web'); wFileById('html');
+    } else {
+      if (parsed.xml      !== undefined) document.getElementById('a-xml').value      = parsed.xml;
+      if (parsed.java     !== undefined) document.getElementById('a-java').value     = parsed.java;
+      if (parsed.manifest !== undefined) document.getElementById('a-manifest').value = parsed.manifest;
+      if (parsed.gradle   !== undefined) document.getElementById('a-gradle').value   = parsed.gradle;
+      closeModal('m-ai'); goPanel('app'); aFileById('xml');
+    }
+    status.textContent = 'Selesai.';
+  } catch(err) {
+    status.textContent = 'Error: ' + err.message;
+    btn.disabled = false; btn.textContent = 'Generate dan Isi ke Editor';
+  }
+}
+
+/* =========================================================
+   INIT — check saved session
+========================================================= */
+window.addEventListener('DOMContentLoaded', () => {
+  const savedUser = getSession();
+  if (savedUser) {
+    const users = getUsers();
+    if (users[savedUser]) {
+      bootApp(savedUser);
+    } else {
+      clearSession();
+    }
+  }
+});
+</script>
+</body>
+</html>
