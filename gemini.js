@@ -5,8 +5,8 @@
 
 const GEMINI_CONFIG = {
   keys: [
-    'AIzaSy-GANTI-DENGAN-API-KEY-GEMINI-KAMU-1',
-    'AIzaSy-GANTI-DENGAN-API-KEY-GEMINI-KAMU-2'  // opsional, fallback key
+    'AIzaSyDumVDW6R5EWTILSxVfG5d3ROQr_xXm06U',
+    'AIzaSyDumVDW6R5EWTILSxVfG5d3ROQr_xXm06U'  // opsional, fallback key
   ],
   endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
   models: [
