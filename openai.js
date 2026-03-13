@@ -5,7 +5,7 @@
 
 const OPENROUTER_CONFIG = {
   keys: [
-    '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',
+    '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',
     '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'  // opsional, fallback key
   ],
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
